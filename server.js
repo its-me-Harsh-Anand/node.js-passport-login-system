@@ -1,3 +1,5 @@
+/*Refer this article for help -> https://medium.com/@schawla333333/passport-authentication-in-node-js-applications-31ebc4f5871e */
+
 if(process.env.NODE_ENV != 'production'){
     require('dotenv').config()
 }
@@ -9,8 +11,8 @@ const passport= require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require("method-override")
-
 const initializePassport = require('./passport-config')
+
 initializePassport(
     passport, 
     email =>  users.find(user=> user.email === email),
@@ -20,6 +22,7 @@ initializePassport(
 const users = []
 
 app.set('view engine',"ejs")
+
 app.use(express.urlencoded({extended : false}))
 app.use(flash())
 app.use(session({
@@ -49,9 +52,9 @@ app.get("/register",checkNotAuthenticated,(req,res)=>{
     res.render("register.ejs")
 })
 
-app.post("/register",checkNotAuthenticated,(req,res)=>{
+app.post("/register",checkNotAuthenticated, async (req,res)=>{
     try{
-        const hashPassword =  bcrypt.hashSync(req.body.password, 10)
+        const hashPassword = await bcrypt.hash(req.body.password, 10)
         users.push({
             id: Date.now().toString(),
             name: req.body.name,
